@@ -71,7 +71,7 @@ def load_actigraph_daily_steps(filepath, steps_col_index=3):
     daily = steps.groupby(df["Date"]).sum()
     return daily
 
-
+# read ActiGraph minute data, build timestamps, and sum steps into daily totals
 
 ########### Folder paths
 
@@ -90,6 +90,7 @@ for fname in os.listdir(FITBIT_DIR):
     if fname.endswith("minuteSteps.csv"):
         daily = load_fitbit_daily_steps(os.path.join(FITBIT_DIR, fname))
         all_daily_steps.extend(daily.tolist())
+# loop through each Fitbit file and collect all daily step totals into one list
 
 print("\n=== Q1: Daily Steps (Fitbit) ===")
 print("Days counted:", len(all_daily_steps))
@@ -119,6 +120,8 @@ print("\n=== Q2: Group Variance (Fitbit) ===")
 print("Subjects:", len(subject_daily))
 print("Pooled std dev:", pooled_std(std_list, n_list))
 
+# compute each subject’s variability and combine them into one pooled standard deviation
+
 
 ################ Q3: Compare devices (t-test) using Subject 1 overlapping days
 
@@ -135,6 +138,7 @@ ag_daily_1 = pd.concat(ag_parts).groupby(level=0).sum()
 common_days = sorted(set(fb_daily_1.index).intersection(set(ag_daily_1.index)))
 fb_vals = [float(fb_daily_1[d]) for d in common_days]
 ag_vals = [float(ag_daily_1[d]) for d in common_days]
+# line up Fitbit and ActiGraph daily steps on the same dates so we can compare them
 
 print("\n=== Q3: Fitbit vs ActiGraph (Subject 1) ===")
 print("Overlapping days:", len(common_days))
@@ -159,6 +163,7 @@ for fname in os.listdir(FITBIT_DIR):
             dow[day_index].append(float(steps))
 
 groups = [dow[i] for i in range(7)]
+# group daily step totals by day of week (Mon=0 ... Sun=6) so we can run ANOVA
 
 print("\n=== Q4: Day-of-week ANOVA (Fitbit) ===")
 print("Counts:", [len(g) for g in groups])
